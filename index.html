@@ -104,9 +104,9 @@
         }
         .btn-sm:hover { background: var(--primary); color: white; }
 
-        /* --- MODAL CARRINHO (ATUALIZADO) --- */
+        /* --- MODAL CARRINHO --- */
         .cart-modal {
-            position: fixed; right: -450px; /* Aumentei a largura para caber os botões */
+            position: fixed; right: -450px;
             top: 0; width: 400px; height: 100%;
             background: #1a1a1a; z-index: 2000; padding: 30px;
             transition: 0.4s; border-left: 1px solid #333;
@@ -117,7 +117,6 @@
         .close-cart { cursor: pointer; font-size: 1.5rem; }
         .cart-items { height: calc(100% - 150px); overflow-y: auto; }
         
-        /* Novos Estilos do Item no Carrinho */
         .cart-item { 
             background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333;
         }
@@ -190,41 +189,8 @@
 
     <section class="catalog" id="modelos">
         <h2 class="section-title">Nossos Modelos</h2>
-        <div class="grid">
-            <div class="product-card">
-                <div class="card-img">Foto X13</div>
-                <div class="card-info">
-                    <h3>Scooter X13 Pro</h3>
-                    <p>Ideal para trajetos urbanos rápidos.</p>
-                    <div class="price-row">
-                        <span class="price">R$ 10.000</span>
-                        <button class="btn-sm" onclick="addToCart('Scooter X13 Pro', 4500)">Comprar</button>
-                    </div>
-                </div>
+        <div class="grid" id="productsGrid">
             </div>
-            <div class="product-card">
-                <div class="card-img">Foto V10</div>
-                <div class="card-info">
-                    <h3>E-Bike V10 Sport</h3>
-                    <p>Potência e conforto para longas distâncias.</p>
-                    <div class="price-row">
-                        <span class="price">R$ 10.000</span>
-                        <button class="btn-sm" onclick="addToCart('E-Bike V10 Sport', 6200)">Comprar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="card-img">Foto V8</div>
-                <div class="card-info">
-                    <h3>V8 Pro</h3>
-                    <p>Design clássico com motor silencioso.</p>
-                    <div class="price-row">
-                        <span class="price">R$ 10.000</span>
-                        <button class="btn-sm" onclick="addToCart('V8 Pro', 3800)">Comprar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
 
     <div class="cart-modal" id="cartModal">
@@ -232,4 +198,161 @@
             <h3>Seu Carrinho</h3>
             <span class="close-cart" onclick="toggleCart()">×</span>
         </div>
-        <div class="cart-items" id="
+        <div class="cart-items" id="cartItems">
+            <p style="color: #666; text-align: center; margin-top: 20px;">Carrinho vazio</p>
+        </div>
+        <div class="cart-total">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cartTotal">R$ 0,00</span>
+            </div>
+            <button class="btn" style="width: 100%">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        const API_URL = 'http://localhost:3000/api'; // Endereço do seu Back-end
+        
+        const cartCountEl = document.querySelector('.cart-count');
+        const cartItemsEl = document.getElementById('cartItems');
+        const cartTotalEl = document.getElementById('cartTotal');
+        const cartModal = document.getElementById('cartModal');
+        const productsGrid = document.getElementById('productsGrid');
+
+        // --- FUNÇÃO 1: Buscar Produtos no Servidor ---
+        async function fetchProducts() {
+            try {
+                // Pede a lista para o Node.js
+                const response = await fetch(`${API_URL}/produtos`);
+                const produtos = await response.json();
+
+                // Limpa o grid (caso tenha algo)
+                productsGrid.innerHTML = '';
+
+                // Desenha cada produto na tela
+                produtos.forEach(produto => {
+                    const card = document.createElement('div');
+                    card.classList.add('product-card');
+                    card.innerHTML = `
+                        <div class="card-img">${produto.image}</div>
+                        <div class="card-info">
+                            <h3>${produto.name}</h3>
+                            <p>${produto.description}</p>
+                            <div class="price-row">
+                                <span class="price">R$ ${produto.price.toLocaleString('pt-BR')}</span>
+                                <button class="btn-sm" onclick="addToCart('${produto.name}', ${produto.price})">Comprar</button>
+                            </div>
+                        </div>
+                    `;
+                    productsGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Erro ao buscar produtos:', error);
+                productsGrid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%;">Erro ao carregar produtos. Verifique se o servidor backend está rodando.</p>';
+            }
+        }
+
+        // --- FUNÇÃO 2: Finalizar Compra (Checkout) ---
+        async function checkout() {
+            if(cart.length === 0) return alert('Carrinho vazio!');
+
+            const pedido = {
+                itens: cart,
+                total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0)
+            };
+
+            try {
+                // Envia o pedido para o Node.js
+                const response = await fetch(`${API_URL}/checkout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pedido)
+                });
+                const resultado = await response.json();
+                
+                alert(resultado.message); // Mostra a mensagem de sucesso
+                cart = []; // Limpa o carrinho
+                updateCart();
+                toggleCart();
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao processar pedido. O servidor está ligado?');
+            }
+        }
+
+        // --- FUNÇÕES DE INTERFACE (Carrinho) ---
+        function toggleCart() {
+            cartModal.classList.toggle('active');
+        }
+
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ name, price, qty: 1 });
+            }
+            updateCart();
+            if(!cartModal.classList.contains('active')) toggleCart();
+        }
+
+        function changeQty(name, amount) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.qty += amount;
+                if (item.qty <= 0) {
+                    removeFromCart(name);
+                } else {
+                    updateCart();
+                }
+            }
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCart();
+        }
+
+        function updateCart() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            cartCountEl.innerText = totalQty;
+            cartItemsEl.innerHTML = '';
+            let totalPrice = 0;
+            
+            cart.forEach(item => {
+                totalPrice += item.price * item.qty;
+                const itemEl = document.createElement('div');
+                itemEl.classList.add('cart-item');
+                itemEl.innerHTML = `
+                    <div class="cart-item-header">
+                        <span>${item.name}</span>
+                        <span>R$ ${(item.price * item.qty).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="changeQty('${item.name}', -1)">−</button>
+                            <span class="qty-value">${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty('${item.name}', 1)">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart('${item.name}')">Remover</button>
+                    </div>
+                `;
+                cartItemsEl.appendChild(itemEl);
+            });
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<p style="color: #666; text-align: center; margin-top: 20px;">Carrinho vazio</p>';
+            }
+            cartTotalEl.innerText = totalPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // INICIALIZAÇÃO
+        // 1. Busca os produtos ao carregar a página
+        fetchProducts();
+        
+        // 2. Conecta o botão de finalizar compra à função de checkout
+        document.querySelector('.cart-total .btn').onclick = checkout;
+    </script>
+</body>
+</html>
