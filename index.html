@@ -8,12 +8,13 @@
         /* --- RESET & BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         :root {
-            --primary: #e65a00; /* Laranja da Logo */
+            /* Cor Laranja extraída da logo */
+            --primary: #e65a00; 
             --dark: #111;
             --gray: #222;
             --light: #f4f4f4;
             --text: #ddd;
-            --danger: #ff4444; /* Cor para remover */
+            --danger: #ff4444; /* Cor para o botão remover */
         }
         body { background-color: var(--dark); color: var(--text); overflow-x: hidden; }
         a { text-decoration: none; color: inherit; transition: 0.3s; }
@@ -26,7 +27,13 @@
             position: fixed; width: 100%; top: 0; z-index: 1000;
             border-bottom: 1px solid #333;
         }
-        .logo-img { height: 50px; width: auto; display: block; }
+        
+        .logo-img {
+            height: 50px;
+            width: auto;
+            display: block;
+        }
+
         nav ul { display: flex; gap: 30px; }
         nav a:hover { color: var(--primary); }
         .cart-icon { cursor: pointer; position: relative; }
@@ -88,3 +95,141 @@
             display: flex; align-items: center; justify-content: center; color: #444;
         }
         .card-info h3 { font-size: 1.2rem; margin-bottom: 5px; color: white; }
+        .card-info p { font-size: 0.9rem; color: #888; margin-bottom: 15px; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+        .btn-sm {
+            padding: 8px 20px; background: white; color: black; border-radius: 20px;
+            font-size: 0.8rem; font-weight: bold; cursor: pointer; border: none;
+        }
+        .btn-sm:hover { background: var(--primary); color: white; }
+
+        /* --- MODAL CARRINHO (ATUALIZADO) --- */
+        .cart-modal {
+            position: fixed; right: -450px; /* Aumentei a largura para caber os botões */
+            top: 0; width: 400px; height: 100%;
+            background: #1a1a1a; z-index: 2000; padding: 30px;
+            transition: 0.4s; border-left: 1px solid #333;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+        .cart-modal.active { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .close-cart { cursor: pointer; font-size: 1.5rem; }
+        .cart-items { height: calc(100% - 150px); overflow-y: auto; }
+        
+        /* Novos Estilos do Item no Carrinho */
+        .cart-item { 
+            background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333;
+        }
+        .cart-item-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 1rem; }
+        .cart-item-controls { display: flex; justify-content: space-between; align-items: center; }
+        
+        .qty-controls { display: flex; align-items: center; gap: 10px; background: #111; padding: 5px 10px; border-radius: 20px; }
+        .qty-btn { 
+            background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; width: 20px; 
+            display: flex; justify-content: center; align-items: center;
+        }
+        .qty-btn:hover { color: var(--primary); }
+        .qty-value { font-size: 1rem; font-weight: bold; width: 20px; text-align: center; }
+
+        .remove-btn { 
+            color: var(--danger); font-size: 0.8rem; cursor: pointer; text-decoration: underline; background: none; border: none;
+        }
+        .remove-btn:hover { color: #ff6666; }
+
+        .cart-total { position: absolute; bottom: 30px; left: 30px; right: 30px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: white; }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; justify-content: center; }
+            .hero-img-container { margin-top: 50px; width: 100%; }
+            .bike-placeholder { width: 100%; height: 250px; }
+            nav { display: none; }
+            .logo-img { height: 40px; }
+            .cart-modal { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#home">
+            <img src="LOGO SEM FUNDO PNG - FUNDO CLARO.png" alt="EBIKE Atacado" class="logo-img">
+        </a>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#modelos">Modelos</a></li>
+                <li><a href="#tecnologia">Tecnologia</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 <span class="cart-count">0</span>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-text">
+            <h1>DOMINE A <br><span>CIDADE</span></h1>
+            <p>A nova geração de mobilidade elétrica. Performance, autonomia e estilo para o seu dia a dia.</p>
+            <button class="btn">Ver Ofertas</button>
+        </div>
+        <div class="hero-img-container">
+            <div class="bike-placeholder">
+            </div>
+            <div class="stat-card stat-1">
+                <span class="stat-value">32 km/h</span>
+                <span class="stat-label">Velocidade Máx</span>
+            </div>
+            <div class="stat-card stat-2">
+                <span class="stat-value">60 km</span>
+                <span class="stat-label">Autonomia</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalog" id="modelos">
+        <h2 class="section-title">Nossos Modelos</h2>
+        <div class="grid">
+            <div class="product-card">
+                <div class="card-img">Foto X13</div>
+                <div class="card-info">
+                    <h3>Scooter X13 Pro</h3>
+                    <p>Ideal para trajetos urbanos rápidos.</p>
+                    <div class="price-row">
+                        <span class="price">R$ 10.000</span>
+                        <button class="btn-sm" onclick="addToCart('Scooter X13 Pro', 4500)">Comprar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="card-img">Foto V10</div>
+                <div class="card-info">
+                    <h3>E-Bike V10 Sport</h3>
+                    <p>Potência e conforto para longas distâncias.</p>
+                    <div class="price-row">
+                        <span class="price">R$ 10.000</span>
+                        <button class="btn-sm" onclick="addToCart('E-Bike V10 Sport', 6200)">Comprar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="card-img">Foto V8</div>
+                <div class="card-info">
+                    <h3>V8 Pro</h3>
+                    <p>Design clássico com motor silencioso.</p>
+                    <div class="price-row">
+                        <span class="price">R$ 10.000</span>
+                        <button class="btn-sm" onclick="addToCart('V8 Pro', 3800)">Comprar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3>Seu Carrinho</h3>
+            <span class="close-cart" onclick="toggleCart()">×</span>
+        </div>
+        <div class="cart-items" id="
