@@ -18,10 +18,22 @@
         nav a:hover { color: var(--primary); }
         .cart-count { background: var(--primary); color: black; padding: 2px 6px; border-radius: 50%; font-size: 0.8rem; font-weight: bold; }
         
-        .admin-link { background: #333; color: var(--primary); padding: 5px 10px; border-radius: 5px; font-weight: bold; border: 1px solid var(--primary); }
-        .admin-link:hover { background: var(--primary); color: white; }
+        /* --- ESTILO DO BOTÃO ADMIN NO HEADER --- */
+        .admin-btn {
+            background: linear-gradient(45deg, #e65a00, #ff8c00);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: none;
+            box-shadow: 0 4px 10px rgba(230, 90, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(230, 90, 0, 0.5); }
 
-        /* HERO (CAPA) */
+        /* HERO */
         .hero { min-height: 100vh; display: flex; align-items: center; padding: 100px 5% 50px; background: radial-gradient(circle at 30% 50%, #1a1a1a, #000); gap: 50px; }
         .hero-text { flex: 1; z-index: 2; max-width: 450px; }
         .hero h1 { font-size: 4rem; color: white; line-height: 1.1; margin-bottom: 20px; }
@@ -29,7 +41,7 @@
         .hero p { color: #aaa; margin-bottom: 30px; font-size: 1.2rem; }
         .btn { background: var(--primary); color: white; padding: 15px 40px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; }
         
-        /* HERO IMAGE CONTAINER */
+        /* HERO IMAGE */
         .hero-img-container { flex: 1.5; display: flex; justify-content: center; align-items: center; position: relative; height: 750px; min-width: 550px; aspect-ratio: 1 / 1; }
         #heroBanner { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 50px rgba(0,0,0,0.7)); display: none; }
         .placeholder-text { color: #333; font-weight: bold; font-size: 2rem; border: 2px dashed #333; padding: 50px; border-radius: 20px; }
@@ -38,20 +50,9 @@
         .catalog { padding: 80px 5%; }
         .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 50px; color: white; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        
         .card { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; transition: 0.3s; }
         .card:hover { border-color: var(--primary); transform: translateY(-5px); }
-        
-        /* --- AQUI ESTÁ A CORREÇÃO DOS PRODUTOS --- */
-        .card img { 
-            width: 100%; 
-            aspect-ratio: 1 / 1; /* FORÇA SER QUADRADO */
-            object-fit: contain; /* Mantém a bike inteira dentro do quadrado */
-            background: #222; 
-            border-radius: 10px; 
-            margin-bottom: 20px; 
-        }
-        
+        .card img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: #222; border-radius: 10px; margin-bottom: 20px; }
         .card h3 { margin-bottom: 10px; color: white; }
         .price { color: var(--primary); font-size: 1.3rem; font-weight: bold; }
         .btn-sm { background: white; color: black; padding: 8px 20px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; }
@@ -76,7 +77,11 @@
         <nav>
             <a href="#home">Home</a>
             <a href="#produtos">Modelos</a>
-            <span id="userArea"><a href="login.html">Login</a></span>
+            
+            <div id="userArea" style="display:flex; align-items:center; gap:15px">
+                <a href="login.html">Login</a>
+            </div>
+
             <span onclick="toggleCart()" style="cursor:pointer">🛒 <span class="cart-count">0</span></span>
         </nav>
     </header>
@@ -110,7 +115,7 @@
     </div>
 
     <script>
-        const API = 'http://localhost:3000/api';
+        const API = '/api';
         let cart = [];
 
         async function init() {
@@ -125,16 +130,9 @@
                 const data = await res.json();
                 const img = document.getElementById('heroBanner');
                 const ph = document.getElementById('heroPlaceholder');
-                
-                if(data.image) { 
-                    img.src = data.image; 
-                    img.style.display = 'block'; 
-                    ph.style.display = 'none'; 
-                } else { 
-                    img.style.display = 'none'; 
-                    ph.style.display = 'block'; 
-                }
-            } catch(e) { console.log(e); }
+                if(data.image) { img.src = data.image; img.style.display = 'block'; ph.style.display = 'none'; } 
+                else { img.style.display = 'none'; ph.style.display = 'block'; }
+            } catch(e) {}
         }
 
         async function loadProducts() {
@@ -156,29 +154,42 @@
             });
         }
 
+        // --- AQUI ESTÁ A LÓGICA DO ADMIN ---
         function checkLogin() {
             const user = localStorage.getItem('ebike_user');
-            const role = localStorage.getItem('ebike_role');
+            const role = localStorage.getItem('ebike_role'); // Pega o cargo salvo
             const area = document.getElementById('userArea');
 
             if(user) {
-                const adminBtn = role === 'admin' ? `<a href="admin.html" class="admin-link">⚙ Painel Admin</a>` : '';
-                area.innerHTML = `${adminBtn} <span style="margin-left:10px">Olá, <b>${user}</b></span> (<a href="#" onclick="logout()" style="color:#ff4444">Sair</a>)`;
+                // Se o cargo for 'admin', cria o botão. Se não, fica vazio.
+                let adminButtonHtml = '';
+                if(role === 'admin') {
+                    adminButtonHtml = `<a href="admin.html" class="admin-btn">⚙ Painel Admin</a>`;
+                }
+
+                area.innerHTML = `
+                    ${adminButtonHtml}
+                    <div style="display:flex; flex-direction:column; line-height:1.2; text-align:right">
+                        <span style="font-size:0.9rem; color:#aaa">Olá,</span>
+                        <span style="font-weight:bold; color:white">${user}</span>
+                    </div>
+                    <a href="#" onclick="logout()" style="color:#ff4444; font-size:0.9rem">Sair</a>
+                `;
             } else {
-                area.innerHTML = `<a href="login.html">Login</a>`;
+                area.innerHTML = `<a href="login.html" style="font-weight:bold">Entrar / Cadastrar</a>`;
             }
         }
 
         function logout() { localStorage.clear(); location.reload(); }
-        function toggleCart() { document.getElementById('cartModal').classList.toggle('active'); }
         
+        // Carrinho
+        function toggleCart() { document.getElementById('cartModal').classList.toggle('active'); }
         function addToCart(name, price) {
             const item = cart.find(i => i.name === name);
             if(item) item.qty++; else cart.push({name, price, qty:1});
             renderCart();
             if(!document.getElementById('cartModal').classList.contains('active')) toggleCart();
         }
-
         function renderCart() {
             document.querySelector('.cart-count').innerText = cart.reduce((a,b)=>a+b.qty,0);
             const total = cart.reduce((a,b)=>a+(b.price*b.qty),0);

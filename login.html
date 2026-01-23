@@ -3,49 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | EBIKE</title>
+    <title>Acesso | EBIKE</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #111; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #222; padding: 40px; border-radius: 10px; width: 400px; text-align: center; border: 1px solid #333; }
-        h2 { color: #e65a00; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #333; border: 1px solid #444; color: white; border-radius: 5px; }
-        button { width: 100%; padding: 12px; background: #e65a00; border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #ff6a00; }
-        .switch { margin-top: 20px; font-size: 0.9rem; color: #aaa; cursor: pointer; text-decoration: underline; }
-        .hidden { display: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        body { 
+            background: radial-gradient(circle at center, #222 0%, #000 100%);
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white;
+            overflow: hidden;
+        }
+
+        /* CARD DE LOGIN VIDRO */
+        .container { 
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 400px; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* CABEÇALHO COM ABAS */
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: #777;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+        
+        .tab-btn.active { color: white; }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: #e65a00;
+        }
+
+        /* INPUTS */
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #ccc; }
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            background: #111; 
+            border: 1px solid #333; 
+            border-radius: 8px; 
+            color: white; 
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        input:focus { border-color: #e65a00; outline: none; background: #0a0a0a; }
+
+        /* BOTÃO */
+        .btn-action { 
+            width: 100%; 
+            padding: 15px; 
+            background: #e65a00; 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin-top: 10px;
+        }
+        .btn-action:hover { background: #ff6a00; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230, 90, 0, 0.3); }
+
+        /* MENSAGEM DE ERRO/SUCESSO (TOAST) */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #333; color: white; padding: 15px 30px; border-radius: 50px;
+            font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0; visibility: hidden; transition: 0.4s; z-index: 1000;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { opacity: 1; visibility: visible; top: 40px; }
+        .toast.error { border-left: 4px solid #ff4444; }
+        .toast.success { border-left: 4px solid #00c851; }
+
+        /* ANIMAÇÃO DOS FORMULÁRIOS */
+        .form-content { display: none; animation: fadeIn 0.5s; }
+        .form-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo-area { text-align: center; margin-bottom: 20px; }
+        .logo-area img { height: 40px; opacity: 0.8; }
     </style>
 </head>
 <body>
+
+    <div id="toast" class="toast">Mensagem aqui</div>
+
     <div class="container">
-        <div id="loginForm">
-            <h2>Entrar</h2>
-            <input type="email" id="loginEmail" placeholder="Seu E-mail">
-            <input type="password" id="loginPass" placeholder="Sua Senha">
-            <button onclick="fazerLogin()">ACESSAR CONTA</button>
-            <p class="switch" onclick="toggleForms()">Não tem conta? Cadastre-se</p>
+        <div class="logo-area">
+            <h2 style="color: #e65a00; letter-spacing: 1px;">EBIKE ID</h2>
         </div>
-        <div id="registerForm" class="hidden">
-            <h2>Criar Conta</h2>
-            <input type="text" id="regName" placeholder="Seu Nome Completo">
-            <input type="email" id="regEmail" placeholder="Seu E-mail">
-            <input type="password" id="regPass" placeholder="Sua Senha">
-            <button onclick="fazerCadastro()">CADASTRAR</button>
-            <p class="switch" onclick="toggleForms()">Já tem conta? Voltar para Login</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Entrar</button>
+            <button class="tab-btn" onclick="switchTab('register')">Criar Conta</button>
+        </div>
+
+        <div id="loginForm" class="form-content active">
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" id="loginEmail" placeholder="seu@email.com">
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="loginPass" placeholder="••••••••">
+            </div>
+            <button class="btn-action" onclick="fazerLogin()">ACESSAR SISTEMA</button>
+        </div>
+
+        <div id="registerForm" class="form-content">
+            <div class="input-group">
+                <label>Nome Completo</label>
+                <input type="text" id="regName" placeholder="Como quer ser chamado?">
+            </div>
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" id="regEmail" placeholder="seu@email.com">
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="regPass" placeholder="Crie uma senha forte">
+            </div>
+            <button class="btn-action" onclick="fazerCadastro()">CRIAR CONTA</button>
         </div>
     </div>
+
     <script>
-        const API = 'http://localhost:3000/api';
-        
-        function toggleForms() {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('registerForm').classList.toggle('hidden');
+        const API = '/api';
+
+        // Alternar entre abas
+        function switchTab(tab) {
+            // Muda botões
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Muda formulário
+            document.querySelectorAll('.form-content').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab + 'Form').classList.add('active');
+        }
+
+        // Mostrar notificação bonita
+        function showToast(msg, type = 'error') {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.className = 'toast', 3000);
+        }
+
+        async function fazerLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPass').value;
+            
+            if(!email || !password) return showToast('Preencha todos os campos!');
+
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    showToast(`Bem-vindo, ${data.name}!`, 'success');
+                    // SALVA O CARGO (ROLE)
+                    localStorage.setItem('ebike_token', data.token);
+                    localStorage.setItem('ebike_user', data.name);
+                    localStorage.setItem('ebike_role', data.role); // <--- IMPORTANTE
+                    
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                } else {
+                    showToast(data.error);
+                }
+            } catch (e) { showToast('Erro de conexão com o servidor.'); }
         }
 
         async function fazerCadastro() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPass').value;
+
+            if(!name || !email || !password) return showToast('Preencha todos os campos!');
 
             try {
                 const res = await fetch(`${API}/register`, {
@@ -55,43 +214,16 @@
                 const data = await res.json();
                 
                 if(res.ok) {
-                    // SUCESSO! Auto-Login e Redirecionamento
-                    alert('Cadastro realizado com sucesso! Você será redirecionado para a loja.');
-                    
-                    // 1. Salva o token que o servidor mandou
+                    showToast('Conta criada! Entrando...', 'success');
                     localStorage.setItem('ebike_token', data.token);
                     localStorage.setItem('ebike_user', data.name);
+                    localStorage.setItem('ebike_role', data.role);
                     
-                    // 2. Manda direto pra loja
-                    window.location.href = 'index.html';
+                    setTimeout(() => window.location.href = 'index.html', 1500);
                 } else {
-                    alert(data.error);
+                    showToast(data.error);
                 }
-            } catch (error) {
-                console.error(error);
-                alert('Erro de conexão com o servidor.');
-            }
-        }
-
-        async function fazerLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPass').value;
-            
-            try {
-                const res = await fetch(`${API}/login`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                
-                if(res.ok) {
-                    localStorage.setItem('ebike_token', data.token);
-                    localStorage.setItem('ebike_user', data.name);
-                    window.location.href = 'index.html';
-                } else alert(data.error);
-            } catch (error) {
-                alert('Erro de conexão');
-            }
+            } catch (e) { showToast('Erro de conexão com o servidor.'); }
         }
     </script>
 </body>

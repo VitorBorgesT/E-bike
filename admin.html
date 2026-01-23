@@ -43,11 +43,9 @@
                 <input type="text" id="pName" placeholder="Nome">
                 <input type="number" id="pPrice" placeholder="Preço (R$)">
                 <input type="text" id="pDesc" placeholder="Descrição">
-                
                 <label style="font-weight:bold; margin-top:10px; display:block">Foto do Produto:</label>
                 <span class="hint">Recomendado: 800 x 800 px (Quadrada) | Formato PNG ou JPG</span>
                 <input type="file" id="pImage">
-                
                 <button class="btn-add" onclick="addProduto()">Salvar Produto</button>
             </div>
             <div class="card">
@@ -87,7 +85,8 @@
     </main>
 
     <script>
-        const API = 'http://localhost:3000/api';
+        // --- AQUI ESTÁ A CORREÇÃO ---
+        const API = '/api'; 
         
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -99,7 +98,6 @@
             if(id === 'pedidos') loadPedidos();
         }
 
-        // --- PRODUTOS ---
         async function loadProdutos() {
             const res = await fetch(`${API}/produtos`);
             const items = await res.json();
@@ -122,24 +120,16 @@
             const priceEl = document.getElementById('pPrice');
             const descEl = document.getElementById('pDesc');
             const fileEl = document.getElementById('pImage');
-
             if(!nameEl.value || !priceEl.value) return alert('Preencha os dados!');
 
             const fd = new FormData();
-            fd.append('name', nameEl.value); 
-            fd.append('price', priceEl.value); 
-            fd.append('description', descEl.value);
+            fd.append('name', nameEl.value); fd.append('price', priceEl.value); fd.append('description', descEl.value);
             if(fileEl.files[0]) fd.append('image', fileEl.files[0]);
 
             await fetch(`${API}/produtos`, { method: 'POST', body: fd });
             loadProdutos();
             alert('Produto salvo!');
-            
-            // LIMPA OS CAMPOS (Pedido atendido)
-            nameEl.value = '';
-            priceEl.value = '';
-            descEl.value = '';
-            fileEl.value = '';
+            nameEl.value = ''; priceEl.value = ''; descEl.value = ''; fileEl.value = '';
         }
 
         async function deleteProduto(id) {
@@ -149,7 +139,6 @@
             }
         }
 
-        // --- USUÁRIOS ---
         async function loadUsers() {
             const res = await fetch(`${API}/users`);
             const users = await res.json();
@@ -161,48 +150,19 @@
                 const actionBtn = isAdmin 
                     ? `<button class="btn-delete" onclick="changeRole(${u.id}, 'user')">Rebaixar</button>`
                     : `<button class="btn-admin" onclick="changeRole(${u.id}, 'admin')">Tornar Admin</button>`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${u.code}</td>
-                        <td>${u.name}</td>
-                        <td>${u.email}</td>
-                        <td>${roleBadge}</td>
-                        <td>
-                            ${actionBtn}
-                            <button class="btn-delete" onclick="deleteUser(${u.id})" style="margin-left:10px">X</button>
-                        </td>
-                    </tr>`;
+                tbody.innerHTML += `<tr><td>${u.code}</td><td>${u.name}</td><td>${u.email}</td><td>${roleBadge}</td><td>${actionBtn}<button class="btn-delete" onclick="deleteUser(${u.id})" style="margin-left:10px">X</button></td></tr>`;
             });
         }
+        async function changeRole(id, newRole) { if(confirm(`Mudar para ${newRole}?`)) { await fetch(`${API}/users/${id}/role`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ role: newRole }) }); loadUsers(); } }
+        async function deleteUser(id) { if(confirm('Excluir?')) { await fetch(`${API}/users/${id}`, { method: 'DELETE' }); loadUsers(); } }
 
-        async function changeRole(id, newRole) {
-            if(confirm(`Mudar cargo para ${newRole}?`)) {
-                await fetch(`${API}/users/${id}/role`, {
-                    method: 'PUT', headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({ role: newRole })
-                });
-                loadUsers();
-            }
-        }
-
-        async function deleteUser(id) {
-            if(confirm('Excluir usuário permanentemente?')) {
-                await fetch(`${API}/users/${id}`, { method: 'DELETE' });
-                loadUsers();
-            }
-        }
-
-        // --- BANNER ---
         async function uploadBanner() {
             const file = document.getElementById('bannerImage').files[0];
             if(!file) return alert('Selecione uma imagem');
-            const fd = new FormData();
-            fd.append('image', file);
+            const fd = new FormData(); fd.append('image', file);
             const res = await fetch(`${API}/config/banner`, { method: 'POST', body: fd });
             const data = await res.json();
-            document.getElementById('currentBanner').src = data.image;
-            alert('Capa atualizada!');
+            document.getElementById('currentBanner').src = data.image; alert('Capa atualizada!');
         }
         async function loadBanner() {
             const res = await fetch(`${API}/config/banner`);
@@ -210,7 +170,6 @@
             if(data.image) document.getElementById('currentBanner').src = data.image;
         }
 
-        // --- PEDIDOS ---
         async function loadPedidos() {
             const res = await fetch(`${API}/pedidos`);
             const pedidos = await res.json();
@@ -220,10 +179,8 @@
                     <p>Cliente: ${p.user_name || 'Visitante'} (${p.user_code || '-'})</p>
                     <p>Total: R$ ${p.total.toLocaleString('pt-BR')}</p>
                     <ul>${p.itens.map(i => `<li>${i.qty}x ${i.name}</li>`).join('')}</ul>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
-
         loadProdutos();
     </script>
 </body>
