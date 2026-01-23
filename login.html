@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | EBIKE</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #111; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #222; padding: 40px; border-radius: 10px; width: 400px; text-align: center; border: 1px solid #333; }
+        h2 { color: #e65a00; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #333; border: 1px solid #444; color: white; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: #e65a00; border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #ff6a00; }
+        .switch { margin-top: 20px; font-size: 0.9rem; color: #aaa; cursor: pointer; text-decoration: underline; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginForm">
+            <h2>Entrar</h2>
+            <input type="email" id="loginEmail" placeholder="Seu E-mail">
+            <input type="password" id="loginPass" placeholder="Sua Senha">
+            <button onclick="fazerLogin()">ACESSAR CONTA</button>
+            <p class="switch" onclick="toggleForms()">Não tem conta? Cadastre-se</p>
+        </div>
+        <div id="registerForm" class="hidden">
+            <h2>Criar Conta</h2>
+            <input type="text" id="regName" placeholder="Seu Nome Completo">
+            <input type="email" id="regEmail" placeholder="Seu E-mail">
+            <input type="password" id="regPass" placeholder="Sua Senha">
+            <button onclick="fazerCadastro()">CADASTRAR</button>
+            <p class="switch" onclick="toggleForms()">Já tem conta? Voltar para Login</p>
+        </div>
+    </div>
+    <script>
+        const API = 'http://localhost:3000/api';
+        
+        function toggleForms() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+        }
+
+        async function fazerCadastro() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPass').value;
+
+            try {
+                const res = await fetch(`${API}/register`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    // SUCESSO! Auto-Login e Redirecionamento
+                    alert('Cadastro realizado com sucesso! Você será redirecionado para a loja.');
+                    
+                    // 1. Salva o token que o servidor mandou
+                    localStorage.setItem('ebike_token', data.token);
+                    localStorage.setItem('ebike_user', data.name);
+                    
+                    // 2. Manda direto pra loja
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro de conexão com o servidor.');
+            }
+        }
+
+        async function fazerLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPass').value;
+            
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    localStorage.setItem('ebike_token', data.token);
+                    localStorage.setItem('ebike_user', data.name);
+                    window.location.href = 'index.html';
+                } else alert(data.error);
+            } catch (error) {
+                alert('Erro de conexão');
+            }
+        }
+    </script>
+</body>
+</html>

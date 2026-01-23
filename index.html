@@ -5,354 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EBIKE Atacado | Mobilidade Elétrica</title>
     <style>
-        /* --- RESET & BASE --- */
+        /* BASE CSS */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        :root {
-            /* Cor Laranja extraída da logo */
-            --primary: #e65a00; 
-            --dark: #111;
-            --gray: #222;
-            --light: #f4f4f4;
-            --text: #ddd;
-            --danger: #ff4444; /* Cor para o botão remover */
-        }
+        :root { --primary: #e65a00; --dark: #111; --text: #ddd; --header-height: 80px; }
         body { background-color: var(--dark); color: var(--text); overflow-x: hidden; }
-        a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
-
-        /* --- HEADER --- */
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%; background: rgba(17, 17, 17, 0.95);
-            position: fixed; width: 100%; top: 0; z-index: 1000;
-            border-bottom: 1px solid #333;
-        }
         
-        .logo-img {
-            height: 50px;
-            width: auto;
-            display: block;
-        }
-
-        nav ul { display: flex; gap: 30px; }
+        /* HEADER */
+        header { display: flex; justify-content: space-between; padding: 0 5%; background: rgba(17,17,17,0.95); position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid #333; height: var(--header-height); align-items: center; }
+        .logo-img { height: 45px; }
+        nav { display: flex; align-items: center; gap: 20px; }
+        nav a { color: #ddd; text-decoration: none; transition: 0.3s; }
         nav a:hover { color: var(--primary); }
-        .cart-icon { cursor: pointer; position: relative; }
-        .cart-count {
-            position: absolute; top: -8px; right: -8px;
-            background: var(--primary); color: var(--dark);
-            font-size: 0.7rem; font-weight: bold;
-            width: 18px; height: 18px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            height: 100vh; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 5%; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            padding-top: 80px;
-        }
-        .hero-text { max-width: 500px; z-index: 2; }
-        .hero h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; color: white; }
-        .hero h1 span { -webkit-text-stroke: 1px var(--primary); color: transparent; }
-        .hero p { font-size: 1.2rem; color: #aaa; margin-bottom: 30px; }
-        .btn {
-            padding: 15px 40px; background: var(--primary); color: var(--text);
-            font-weight: 700; border-radius: 50px; text-transform: uppercase;
-            letter-spacing: 1px; cursor: pointer; border: none;
-        }
-        .btn:hover { box-shadow: 0 0 20px rgba(230, 90, 0, 0.5); transform: translateY(-2px); color: white; }
+        .cart-count { background: var(--primary); color: black; padding: 2px 6px; border-radius: 50%; font-size: 0.8rem; font-weight: bold; }
         
-        .hero-img-container {
-            flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; position: relative;
-        }
-        .bike-placeholder {
-            width: 600px; height: 350px; background: #222; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid #333; position: relative;
-        }
-        .bike-placeholder::after { content: "IMAGEM DA BIKE AQUI"; color: #555; font-weight: bold; }
-        
-        .stat-card {
-            position: absolute; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            padding: 15px 25px; border-radius: 10px; border: 1px solid #444;
-        }
-        .stat-1 { top: 20%; right: 10%; }
-        .stat-2 { bottom: 20%; left: 10%; }
-        .stat-value { display: block; font-size: 1.5rem; font-weight: bold; color: white; }
-        .stat-label { font-size: 0.8rem; color: #ccc; }
+        .admin-link { background: #333; color: var(--primary); padding: 5px 10px; border-radius: 5px; font-weight: bold; border: 1px solid var(--primary); }
+        .admin-link:hover { background: var(--primary); color: white; }
 
-        /* --- CATALOGO --- */
-        .catalog { padding: 80px 5%; background: #111; }
-        .section-title { font-size: 2.5rem; margin-bottom: 50px; text-align: center; color: white; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .product-card {
-            background: #1a1a1a; border-radius: 15px; padding: 20px;
-            transition: 0.3s; border: 1px solid #333; position: relative; overflow: hidden;
+        /* HERO (CAPA) */
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 100px 5% 50px; background: radial-gradient(circle at 30% 50%, #1a1a1a, #000); gap: 50px; }
+        .hero-text { flex: 1; z-index: 2; max-width: 450px; }
+        .hero h1 { font-size: 4rem; color: white; line-height: 1.1; margin-bottom: 20px; }
+        .hero h1 span { color: transparent; -webkit-text-stroke: 1px var(--primary); }
+        .hero p { color: #aaa; margin-bottom: 30px; font-size: 1.2rem; }
+        .btn { background: var(--primary); color: white; padding: 15px 40px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        
+        /* HERO IMAGE CONTAINER */
+        .hero-img-container { flex: 1.5; display: flex; justify-content: center; align-items: center; position: relative; height: 750px; min-width: 550px; aspect-ratio: 1 / 1; }
+        #heroBanner { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 50px rgba(0,0,0,0.7)); display: none; }
+        .placeholder-text { color: #333; font-weight: bold; font-size: 2rem; border: 2px dashed #333; padding: 50px; border-radius: 20px; }
+
+        /* CATALOGO */
+        .catalog { padding: 80px 5%; }
+        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 50px; color: white; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
+        .card { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        
+        /* --- AQUI ESTÁ A CORREÇÃO DOS PRODUTOS --- */
+        .card img { 
+            width: 100%; 
+            aspect-ratio: 1 / 1; /* FORÇA SER QUADRADO */
+            object-fit: contain; /* Mantém a bike inteira dentro do quadrado */
+            background: #222; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
         }
-        .product-card:hover { border-color: var(--primary); transform: translateY(-5px); }
-        .card-img {
-            height: 200px; background: #222; border-radius: 10px; margin-bottom: 20px;
-            display: flex; align-items: center; justify-content: center; color: #444;
-        }
-        .card-info h3 { font-size: 1.2rem; margin-bottom: 5px; color: white; }
-        .card-info p { font-size: 0.9rem; color: #888; margin-bottom: 15px; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; }
-        .price { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
-        .btn-sm {
-            padding: 8px 20px; background: white; color: black; border-radius: 20px;
-            font-size: 0.8rem; font-weight: bold; cursor: pointer; border: none;
-        }
+        
+        .card h3 { margin-bottom: 10px; color: white; }
+        .price { color: var(--primary); font-size: 1.3rem; font-weight: bold; }
+        .btn-sm { background: white; color: black; padding: 8px 20px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; }
         .btn-sm:hover { background: var(--primary); color: white; }
 
-        /* --- MODAL CARRINHO --- */
-        .cart-modal {
-            position: fixed; right: -450px;
-            top: 0; width: 400px; height: 100%;
-            background: #1a1a1a; z-index: 2000; padding: 30px;
-            transition: 0.4s; border-left: 1px solid #333;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-        }
+        /* CARRINHO */
+        .cart-modal { position: fixed; right: -400px; top: 0; width: 350px; height: 100%; background: #1a1a1a; z-index: 2000; padding: 30px; transition: 0.4s; border-left: 1px solid #333; display: flex; flex-direction: column; }
         .cart-modal.active { right: 0; }
-        .cart-header { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .close-cart { cursor: pointer; font-size: 1.5rem; }
-        .cart-items { height: calc(100% - 150px); overflow-y: auto; }
-        
-        .cart-item { 
-            background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333;
-        }
-        .cart-item-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 1rem; }
-        .cart-item-controls { display: flex; justify-content: space-between; align-items: center; }
-        
-        .qty-controls { display: flex; align-items: center; gap: 10px; background: #111; padding: 5px 10px; border-radius: 20px; }
-        .qty-btn { 
-            background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; width: 20px; 
-            display: flex; justify-content: center; align-items: center;
-        }
-        .qty-btn:hover { color: var(--primary); }
-        .qty-value { font-size: 1rem; font-weight: bold; width: 20px; text-align: center; }
+        #cartItems { flex: 1; overflow-y: auto; margin: 20px 0; }
+        .cart-item { background: #222; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
 
-        .remove-btn { 
-            color: var(--danger); font-size: 0.8rem; cursor: pointer; text-decoration: underline; background: none; border: none;
-        }
-        .remove-btn:hover { color: #ff6666; }
-
-        .cart-total { position: absolute; bottom: 30px; left: 30px; right: 30px; }
-        .total-row { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: white; }
-
-        @media (max-width: 768px) {
-            .hero { flex-direction: column; text-align: center; justify-content: center; }
-            .hero-img-container { margin-top: 50px; width: 100%; }
-            .bike-placeholder { width: 100%; height: 250px; }
-            nav { display: none; }
-            .logo-img { height: 40px; }
-            .cart-modal { width: 100%; right: -100%; }
+        @media(max-width: 1100px) { 
+            .hero { flex-direction: column; text-align: center; padding-top: 120px; height: auto; } 
+            .hero-img-container { width: 100%; height: auto; min-height: 400px; max-height: 600px; min-width: auto; margin-top: 30px; } 
+            .hero-text { margin: 0 auto; }
         }
     </style>
 </head>
 <body>
-
     <header>
-        <a href="#home">
-            <img src="LOGO SEM FUNDO PNG - FUNDO CLARO.png" alt="EBIKE Atacado" class="logo-img">
-        </a>
+        <img src="LOGO SEM FUNDO PNG - FUNDO CLARO.png" class="logo-img">
         <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#modelos">Modelos</a></li>
-                <li><a href="#tecnologia">Tecnologia</a></li>
-            </ul>
+            <a href="#home">Home</a>
+            <a href="#produtos">Modelos</a>
+            <span id="userArea"><a href="login.html">Login</a></span>
+            <span onclick="toggleCart()" style="cursor:pointer">🛒 <span class="cart-count">0</span></span>
         </nav>
-        <div class="cart-icon" onclick="toggleCart()">
-            🛒 <span class="cart-count">0</span>
-        </div>
     </header>
 
     <section class="hero" id="home">
         <div class="hero-text">
             <h1>DOMINE A <br><span>CIDADE</span></h1>
-            <p>A nova geração de mobilidade elétrica. Performance, autonomia e estilo para o seu dia a dia.</p>
-            <button class="btn">Ver Ofertas</button>
+            <p>Mobilidade elétrica de alta performance.</p>
+            <button class="btn" onclick="document.getElementById('produtos').scrollIntoView({behavior:'smooth'})">Ver Ofertas</button>
         </div>
         <div class="hero-img-container">
-            <div class="bike-placeholder">
-            </div>
-            <div class="stat-card stat-1">
-                <span class="stat-value">32 km/h</span>
-                <span class="stat-label">Velocidade Máx</span>
-            </div>
-            <div class="stat-card stat-2">
-                <span class="stat-value">60 km</span>
-                <span class="stat-label">Autonomia</span>
-            </div>
+            <img id="heroBanner" src="" alt="Destaque">
+            <div id="heroPlaceholder" class="placeholder-text">IMAGEM DA CAPA</div>
         </div>
     </section>
 
-    <section class="catalog" id="modelos">
+    <section class="catalog" id="produtos">
         <h2 class="section-title">Nossos Modelos</h2>
-        <div class="grid" id="productsGrid">
-            </div>
+        <div class="grid" id="productsGrid"></div>
     </section>
 
     <div class="cart-modal" id="cartModal">
-        <div class="cart-header">
-            <h3>Seu Carrinho</h3>
-            <span class="close-cart" onclick="toggleCart()">×</span>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <p style="color: #666; text-align: center; margin-top: 20px;">Carrinho vazio</p>
-        </div>
-        <div class="cart-total">
-            <div class="total-row">
-                <span>Total:</span>
-                <span id="cartTotal">R$ 0,00</span>
+        <h3>Carrinho <span onclick="toggleCart()" style="float:right;cursor:pointer">×</span></h3>
+        <div id="cartItems"></div>
+        <div style="border-top:1px solid #333; padding-top:20px;">
+            <div style="display:flex;justify-content:space-between;font-size:1.2rem;font-weight:bold;margin-bottom:15px">
+                <span>Total:</span> <span id="cartTotal">R$ 0,00</span>
             </div>
-            <button class="btn" style="width: 100%">Finalizar Compra</button>
+            <button class="btn" style="width:100%" onclick="checkout()">Finalizar</button>
         </div>
     </div>
 
     <script>
+        const API = 'http://localhost:3000/api';
         let cart = [];
-        const API_URL = 'http://localhost:3000/api'; // Endereço do seu Back-end
-        
-        const cartCountEl = document.querySelector('.cart-count');
-        const cartItemsEl = document.getElementById('cartItems');
-        const cartTotalEl = document.getElementById('cartTotal');
-        const cartModal = document.getElementById('cartModal');
-        const productsGrid = document.getElementById('productsGrid');
 
-        // --- FUNÇÃO 1: Buscar Produtos no Servidor ---
-        async function fetchProducts() {
-            try {
-                // Pede a lista para o Node.js
-                const response = await fetch(`${API_URL}/produtos`);
-                const produtos = await response.json();
-
-                // Limpa o grid (caso tenha algo)
-                productsGrid.innerHTML = '';
-
-                // Desenha cada produto na tela
-                produtos.forEach(produto => {
-                    const card = document.createElement('div');
-                    card.classList.add('product-card');
-                    card.innerHTML = `
-                        <div class="card-img">${produto.image}</div>
-                        <div class="card-info">
-                            <h3>${produto.name}</h3>
-                            <p>${produto.description}</p>
-                            <div class="price-row">
-                                <span class="price">R$ ${produto.price.toLocaleString('pt-BR')}</span>
-                                <button class="btn-sm" onclick="addToCart('${produto.name}', ${produto.price})">Comprar</button>
-                            </div>
-                        </div>
-                    `;
-                    productsGrid.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Erro ao buscar produtos:', error);
-                productsGrid.innerHTML = '<p style="color: #aaa; text-align: center; width: 100%;">Erro ao carregar produtos. Verifique se o servidor backend está rodando.</p>';
-            }
+        async function init() {
+            checkLogin();
+            loadBanner();
+            loadProducts();
         }
 
-        // --- FUNÇÃO 2: Finalizar Compra (Checkout) ---
-        async function checkout() {
-            if(cart.length === 0) return alert('Carrinho vazio!');
-
-            const pedido = {
-                itens: cart,
-                total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0)
-            };
-
+        async function loadBanner() {
             try {
-                // Envia o pedido para o Node.js
-                const response = await fetch(`${API_URL}/checkout`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(pedido)
-                });
-                const resultado = await response.json();
+                const res = await fetch(`${API}/config/banner`);
+                const data = await res.json();
+                const img = document.getElementById('heroBanner');
+                const ph = document.getElementById('heroPlaceholder');
                 
-                alert(resultado.message); // Mostra a mensagem de sucesso
-                cart = []; // Limpa o carrinho
-                updateCart();
-                toggleCart();
-            } catch (error) {
-                console.error(error);
-                alert('Erro ao processar pedido. O servidor está ligado?');
-            }
-        }
-
-        // --- FUNÇÕES DE INTERFACE (Carrinho) ---
-        function toggleCart() {
-            cartModal.classList.toggle('active');
-        }
-
-        function addToCart(name, price) {
-            const existingItem = cart.find(item => item.name === name);
-            if (existingItem) {
-                existingItem.qty += 1;
-            } else {
-                cart.push({ name, price, qty: 1 });
-            }
-            updateCart();
-            if(!cartModal.classList.contains('active')) toggleCart();
-        }
-
-        function changeQty(name, amount) {
-            const item = cart.find(item => item.name === name);
-            if (item) {
-                item.qty += amount;
-                if (item.qty <= 0) {
-                    removeFromCart(name);
-                } else {
-                    updateCart();
+                if(data.image) { 
+                    img.src = data.image; 
+                    img.style.display = 'block'; 
+                    ph.style.display = 'none'; 
+                } else { 
+                    img.style.display = 'none'; 
+                    ph.style.display = 'block'; 
                 }
-            }
+            } catch(e) { console.log(e); }
         }
 
-        function removeFromCart(name) {
-            cart = cart.filter(item => item.name !== name);
-            updateCart();
-        }
-
-        function updateCart() {
-            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-            cartCountEl.innerText = totalQty;
-            cartItemsEl.innerHTML = '';
-            let totalPrice = 0;
-            
-            cart.forEach(item => {
-                totalPrice += item.price * item.qty;
-                const itemEl = document.createElement('div');
-                itemEl.classList.add('cart-item');
-                itemEl.innerHTML = `
-                    <div class="cart-item-header">
-                        <span>${item.name}</span>
-                        <span>R$ ${(item.price * item.qty).toLocaleString('pt-BR')}</span>
-                    </div>
-                    <div class="cart-item-controls">
-                        <div class="qty-controls">
-                            <button class="qty-btn" onclick="changeQty('${item.name}', -1)">−</button>
-                            <span class="qty-value">${item.qty}</span>
-                            <button class="qty-btn" onclick="changeQty('${item.name}', 1)">+</button>
+        async function loadProducts() {
+            const res = await fetch(`${API}/produtos`);
+            const items = await res.json();
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            items.forEach(i => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${i.image}">
+                        <h3>${i.name}</h3>
+                        <p>${i.description}</p>
+                        <div class="price-row">
+                            <span class="price">R$ ${i.price.toLocaleString('pt-BR')}</span>
+                            <button class="btn-sm" onclick="addToCart('${i.name}', ${i.price})">Comprar</button>
                         </div>
-                        <button class="remove-btn" onclick="removeFromCart('${item.name}')">Remover</button>
-                    </div>
-                `;
-                cartItemsEl.appendChild(itemEl);
+                    </div>`;
             });
-
-            if (cart.length === 0) {
-                cartItemsEl.innerHTML = '<p style="color: #666; text-align: center; margin-top: 20px;">Carrinho vazio</p>';
-            }
-            cartTotalEl.innerText = totalPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        // INICIALIZAÇÃO
-        // 1. Busca os produtos ao carregar a página
-        fetchProducts();
+        function checkLogin() {
+            const user = localStorage.getItem('ebike_user');
+            const role = localStorage.getItem('ebike_role');
+            const area = document.getElementById('userArea');
+
+            if(user) {
+                const adminBtn = role === 'admin' ? `<a href="admin.html" class="admin-link">⚙ Painel Admin</a>` : '';
+                area.innerHTML = `${adminBtn} <span style="margin-left:10px">Olá, <b>${user}</b></span> (<a href="#" onclick="logout()" style="color:#ff4444">Sair</a>)`;
+            } else {
+                area.innerHTML = `<a href="login.html">Login</a>`;
+            }
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+        function toggleCart() { document.getElementById('cartModal').classList.toggle('active'); }
         
-        // 2. Conecta o botão de finalizar compra à função de checkout
-        document.querySelector('.cart-total .btn').onclick = checkout;
+        function addToCart(name, price) {
+            const item = cart.find(i => i.name === name);
+            if(item) item.qty++; else cart.push({name, price, qty:1});
+            renderCart();
+            if(!document.getElementById('cartModal').classList.contains('active')) toggleCart();
+        }
+
+        function renderCart() {
+            document.querySelector('.cart-count').innerText = cart.reduce((a,b)=>a+b.qty,0);
+            const total = cart.reduce((a,b)=>a+(b.price*b.qty),0);
+            document.getElementById('cartTotal').innerText = total.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
+            document.getElementById('cartItems').innerHTML = cart.map(i => 
+                `<div class="cart-item">
+                    <b>${i.name}</b> <br> ${i.qty}x R$ ${i.price} 
+                    <span style="float:right;color:#ff4444;cursor:pointer" onclick="removeFromCart('${i.name}')">Remover</span>
+                 </div>`).join('');
+        }
+        function removeFromCart(name) { cart = cart.filter(i => i.name !== name); renderCart(); }
+
+        async function checkout() {
+            const token = localStorage.getItem('ebike_token');
+            if(cart.length === 0) return alert('Vazio!');
+            const res = await fetch(`${API}/checkout`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ itens: cart, total: 0, token })
+            });
+            const data = await res.json();
+            if(data.url) location.href = data.url;
+        }
+
+        init();
     </script>
 </body>
 </html>

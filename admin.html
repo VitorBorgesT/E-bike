@@ -2,179 +2,228 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Admin | EBIKE</title>
+    <title>Admin | EBIKE</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: #f0f2f5; display: flex; height: 100vh; margin: 0; }
-        
-        /* Sidebar */
         aside { width: 250px; background: #111; color: white; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
         aside h2 { color: #e65a00; margin-bottom: 20px; }
         aside button { background: none; border: none; color: #ddd; text-align: left; padding: 15px; cursor: pointer; font-size: 1rem; border-radius: 5px; }
         aside button:hover, aside button.active { background: #333; color: #e65a00; }
-
-        /* Conteúdo */
         main { flex: 1; padding: 40px; overflow-y: auto; }
         .section { display: none; }
         .section.active { display: block; }
-        h1 { margin-bottom: 30px; color: #333; }
-
-        /* Tabelas e Cards */
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { color: #666; font-size: 0.9rem; }
-        
-        /* Formulário */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #666; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .btn-add { background: #e65a00; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-delete { color: red; cursor: pointer; font-weight: bold; border: none; background: none;}
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 5px; width: 100%; }
+        .hint { font-size: 0.8rem; color: #666; margin-bottom: 10px; display: block; }
+        .btn-add { background: #e65a00; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .btn-delete { color: red; cursor: pointer; border: none; background: none; }
+        .btn-admin { color: #1a73e8; cursor: pointer; border: none; background: none; font-weight: bold; }
+        .tag-admin { background: #1a73e8; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+        img.thumb { width: 50px; height: 50px; object-fit: contain; border-radius: 5px; background: #eee; }
     </style>
 </head>
 <body>
-
     <aside>
         <h2>EBIKE SYSTEM</h2>
-        <button onclick="showSection('produtos')" class="active">📦 Gerenciar Produtos</button>
-        <button onclick="showSection('pedidos')">🛒 Ver Pedidos</button>
+        <button onclick="showSection('produtos')" class="active">📦 Produtos</button>
+        <button onclick="showSection('usuarios')">👥 Usuários</button>
+        <button onclick="showSection('site')">🖼️ Capa do Site</button>
+        <button onclick="showSection('pedidos')">🛒 Pedidos</button>
+        <button onclick="window.location.href='index.html'" style="margin-top:auto; color:#aaa">⬅ Voltar ao Site</button>
     </aside>
 
     <main>
         <div id="produtos" class="section active">
             <h1>Estoque de Produtos</h1>
-            
             <div class="card" style="background: #fff8f0; border: 1px solid #e65a00;">
                 <h3>+ Novo Produto</h3>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="pName" placeholder="Nome do Produto">
-                    <input type="number" id="pPrice" placeholder="Preço (ex: 4500.00)">
-                    <input type="text" id="pDesc" placeholder="Descrição Curta">
-                    <button class="btn-add" onclick="addProduto()">Salvar</button>
-                </div>
+                <input type="text" id="pName" placeholder="Nome">
+                <input type="number" id="pPrice" placeholder="Preço (R$)">
+                <input type="text" id="pDesc" placeholder="Descrição">
+                
+                <label style="font-weight:bold; margin-top:10px; display:block">Foto do Produto:</label>
+                <span class="hint">Recomendado: 800 x 800 px (Quadrada) | Formato PNG ou JPG</span>
+                <input type="file" id="pImage">
+                
+                <button class="btn-add" onclick="addProduto()">Salvar Produto</button>
             </div>
-
             <div class="card">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Preço</th>
-                            <th>Descrição</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTable">
-                        </tbody>
+                    <thead><tr><th>Img</th><th>Cód</th><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead>
+                    <tbody id="produtosTable"></tbody>
                 </table>
             </div>
         </div>
 
+        <div id="usuarios" class="section">
+            <h1>Gerenciar Usuários</h1>
+            <div class="card">
+                <table>
+                    <thead><tr><th>Cód</th><th>Nome</th><th>Email</th><th>Cargo</th><th>Ações</th></tr></thead>
+                    <tbody id="usersTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="site" class="section">
+            <h1>Personalizar Site</h1>
+            <div class="card">
+                <h3>Imagem Principal (Banner)</h3>
+                <span class="hint">Recomendado: 1920 x 600 px (Horizontal) | Fundo transparente ou escuro fica melhor.</span>
+                <input type="file" id="bannerImage">
+                <button class="btn-add" onclick="uploadBanner()">Atualizar Capa</button>
+                <br><br>
+                <img id="currentBanner" src="" style="max-width: 100%; height: 200px; object-fit: contain; background: #333; border-radius: 10px;">
+            </div>
+        </div>
+
         <div id="pedidos" class="section">
-            <h1>Pedidos Recebidos</h1>
-            <div id="ordersList">
-                </div>
+            <h1>Pedidos</h1>
+            <div id="ordersList"></div>
         </div>
     </main>
 
     <script>
-        const API_URL = 'http://localhost:3000/api';
-
-        // Alternar abas
+        const API = 'http://localhost:3000/api';
+        
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('aside button').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            
             if(id === 'produtos') loadProdutos();
+            if(id === 'usuarios') loadUsers();
+            if(id === 'site') loadBanner();
             if(id === 'pedidos') loadPedidos();
         }
 
-        // --- FUNÇÕES DE PRODUTOS ---
+        // --- PRODUTOS ---
         async function loadProdutos() {
-            try {
-                const res = await fetch(`${API_URL}/produtos`);
-                const produtos = await res.json();
-                const tbody = document.getElementById('productsTable');
-                tbody.innerHTML = '';
-
-                produtos.forEach(p => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${p.name}</td>
-                            <td>R$ ${p.price.toLocaleString('pt-BR')}</td>
-                            <td>${p.description}</td>
-                            <td><button class="btn-delete" onclick="deleteProduto(${p.id})">Excluir</button></td>
-                        </tr>
-                    `;
-                });
-            } catch (error) {
-                console.error("Erro ao carregar produtos:", error);
-                alert("Erro ao conectar com o servidor. Ele está rodando?");
-            }
+            const res = await fetch(`${API}/produtos`);
+            const items = await res.json();
+            const tbody = document.getElementById('produtosTable');
+            tbody.innerHTML = '';
+            items.forEach(i => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${i.image}" class="thumb"></td>
+                        <td><b>${i.code}</b></td>
+                        <td>${i.name}</td>
+                        <td>R$ ${i.price.toLocaleString('pt-BR')}</td>
+                        <td><button class="btn-delete" onclick="deleteProduto(${i.id})">Excluir</button></td>
+                    </tr>`;
+            });
         }
 
         async function addProduto() {
-            const name = document.getElementById('pName').value;
-            const price = parseFloat(document.getElementById('pPrice').value);
-            const description = document.getElementById('pDesc').value;
+            const nameEl = document.getElementById('pName');
+            const priceEl = document.getElementById('pPrice');
+            const descEl = document.getElementById('pDesc');
+            const fileEl = document.getElementById('pImage');
 
-            if(!name || !price) return alert('Preencha nome e preço!');
+            if(!nameEl.value || !priceEl.value) return alert('Preencha os dados!');
 
-            await fetch(`${API_URL}/produtos`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ name, price, description, image: "Foto Nova" })
-            });
+            const fd = new FormData();
+            fd.append('name', nameEl.value); 
+            fd.append('price', priceEl.value); 
+            fd.append('description', descEl.value);
+            if(fileEl.files[0]) fd.append('image', fileEl.files[0]);
 
-            document.getElementById('pName').value = '';
-            document.getElementById('pPrice').value = '';
-            document.getElementById('pDesc').value = '';
+            await fetch(`${API}/produtos`, { method: 'POST', body: fd });
             loadProdutos();
-            alert('Produto Adicionado!');
+            alert('Produto salvo!');
+            
+            // LIMPA OS CAMPOS (Pedido atendido)
+            nameEl.value = '';
+            priceEl.value = '';
+            descEl.value = '';
+            fileEl.value = '';
         }
 
         async function deleteProduto(id) {
-            if(confirm('Tem certeza que deseja excluir?')) {
-                await fetch(`${API_URL}/produtos/${id}`, { method: 'DELETE' });
+            if(confirm('Excluir?')) {
+                await fetch(`${API}/produtos/${id}`, { method: 'DELETE' });
                 loadProdutos();
             }
         }
 
-        // --- FUNÇÕES DE PEDIDOS ---
-        async function loadPedidos() {
-            try {
-                const res = await fetch(`${API_URL}/pedidos`);
-                const pedidos = await res.json();
-                const container = document.getElementById('ordersList');
-                container.innerHTML = '';
+        // --- USUÁRIOS ---
+        async function loadUsers() {
+            const res = await fetch(`${API}/users`);
+            const users = await res.json();
+            const tbody = document.getElementById('usersTable');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                const isAdmin = u.role === 'admin';
+                const roleBadge = isAdmin ? '<span class="tag-admin">ADMIN</span>' : 'Cliente';
+                const actionBtn = isAdmin 
+                    ? `<button class="btn-delete" onclick="changeRole(${u.id}, 'user')">Rebaixar</button>`
+                    : `<button class="btn-admin" onclick="changeRole(${u.id}, 'admin')">Tornar Admin</button>`;
 
-                if(pedidos.length === 0) {
-                    container.innerHTML = '<p>Nenhum pedido ainda.</p>';
-                    return;
-                }
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${u.code}</td>
+                        <td>${u.name}</td>
+                        <td>${u.email}</td>
+                        <td>${roleBadge}</td>
+                        <td>
+                            ${actionBtn}
+                            <button class="btn-delete" onclick="deleteUser(${u.id})" style="margin-left:10px">X</button>
+                        </td>
+                    </tr>`;
+            });
+        }
 
-                pedidos.forEach(p => {
-                    let itensHtml = p.itens.map(i => `<li>${i.qty}x ${i.name}</li>`).join('');
-                    container.innerHTML += `
-                        <div class="card">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                <strong>Pedido #${p.id}</strong>
-                                <span style="color:#666">${p.data}</span>
-                            </div>
-                            <ul style="margin-bottom:10px; padding-left:20px; color:#555;">${itensHtml}</ul>
-                            <h3 style="color:#e65a00">Total: R$ ${p.total.toLocaleString('pt-BR')}</h3>
-                        </div>
-                    `;
+        async function changeRole(id, newRole) {
+            if(confirm(`Mudar cargo para ${newRole}?`)) {
+                await fetch(`${API}/users/${id}/role`, {
+                    method: 'PUT', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ role: newRole })
                 });
-            } catch (error) {
-                console.error("Erro ao carregar pedidos:", error);
+                loadUsers();
             }
         }
 
-        // Carrega produtos ao abrir
+        async function deleteUser(id) {
+            if(confirm('Excluir usuário permanentemente?')) {
+                await fetch(`${API}/users/${id}`, { method: 'DELETE' });
+                loadUsers();
+            }
+        }
+
+        // --- BANNER ---
+        async function uploadBanner() {
+            const file = document.getElementById('bannerImage').files[0];
+            if(!file) return alert('Selecione uma imagem');
+            const fd = new FormData();
+            fd.append('image', file);
+            const res = await fetch(`${API}/config/banner`, { method: 'POST', body: fd });
+            const data = await res.json();
+            document.getElementById('currentBanner').src = data.image;
+            alert('Capa atualizada!');
+        }
+        async function loadBanner() {
+            const res = await fetch(`${API}/config/banner`);
+            const data = await res.json();
+            if(data.image) document.getElementById('currentBanner').src = data.image;
+        }
+
+        // --- PEDIDOS ---
+        async function loadPedidos() {
+            const res = await fetch(`${API}/pedidos`);
+            const pedidos = await res.json();
+            document.getElementById('ordersList').innerHTML = pedidos.map(p => `
+                <div class="card">
+                    <h3>Pedido #${p.id.substr(0,8)}...</h3>
+                    <p>Cliente: ${p.user_name || 'Visitante'} (${p.user_code || '-'})</p>
+                    <p>Total: R$ ${p.total.toLocaleString('pt-BR')}</p>
+                    <ul>${p.itens.map(i => `<li>${i.qty}x ${i.name}</li>`).join('')}</ul>
+                </div>
+            `).join('');
+        }
+
         loadProdutos();
     </script>
 </body>
